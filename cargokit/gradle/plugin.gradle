@@ -15,6 +15,9 @@ class CargoKitExtension {
 
 abstract class CargoKitBuildTask extends DefaultTask {
 
+    @Inject
+    abstract ExecOperations getExecOperations()
+
     @Input
     String buildMode
 
@@ -44,8 +47,6 @@ abstract class CargoKitBuildTask extends DefaultTask {
 
     @TaskAction
     def build() {
-        // Gradle 9 removed Project.exec; obtain ExecOperations from internal services.
-        def execOps = (project as org.gradle.api.internal.project.ProjectInternal).services.get(org.gradle.process.ExecOperations)
         if (project.cargokit.manifestDir == null) {
             throw new GradleException("Property 'manifestDir' must be set on cargokit extension");
         }
@@ -62,12 +63,12 @@ abstract class CargoKitBuildTask extends DefaultTask {
         def rootProjectDir = project.rootProject.projectDir
         
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-            execOps.exec {
+            execOperations.exec {
                 commandLine 'chmod', '+x', path
             }
         }
-
-        execOps.exec {
+        
+        execOperations.exec {
             executable path
             args "build-gradle"
             environment "CARGOKIT_ROOT_PROJECT_DIR", rootProjectDir

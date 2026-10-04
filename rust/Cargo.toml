@@ -7,28 +7,39 @@ edition = "2021"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-chrono = "0.4.42"
-flutter_rust_bridge = { version = "=2.11.1", features = ["chrono"] }
-futures-util = "0.3.31"
-tokio = { version = "1.48.0", features = ["full"] }
-tokio-util = "0.7.17"
+chrono = "0.4.45"
+flutter_rust_bridge = { version = "=2.12.0", features = ["chrono"] }
+futures-util = "0.3.32"
+log = "0.4.32"
+webpki-root-certs = "1.0"
+tokio = { version = "1.52", features = ["full"] }
+tokio-util = "0.7.18"
+
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.22"
+ndk-context = "0.1"
+rustls-platform-verifier = "0.7"
 
 [dependencies.reqwest]
-version = "0.12.25"
+version = "0.13.4"
 default-features = false
 features = [
     "charset",
     "cookies",
+    "form",
     "http2",
     "http3",
-    "rustls-tls-webpki-roots",
+    "query",
+    "rustls",
     "stream",
     "multipart",
     "socks",
 
     # Compression
     "brotli",
+    "deflate",
     "gzip",
+    "zstd",
 ]
 
 [lints.rust]
@@ -42,5 +53,6 @@ lto = true
 codegen-units = 1
 
 [profile.dev]
+debug-assertions = false # Set to true for Trace logging during development.
 opt-level = 3
 panic = "abort"
